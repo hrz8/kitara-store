@@ -30,18 +30,29 @@ func NewUsecase(repo OrderDomain.Repository, productRepo ProductDomain.Repositor
 func (h handler) Create(c echo.Context, o *models.CreateOrderPayload) (*models.Order, error) {
 	ac := c.(*lib.AppContext)
 	db := ac.MysqlSession
+	trx := db.Begin()
 
 	ordersProducts := make([]models.OrdersProducts, 0)
 	var priceAmount uint64 = 0
 	for _, productPayload := range o.Products {
-		product, err := h.productRepository.GetByID(db, productPayload.ID)
+		product, err := h.productRepository.GetByID(trx, productPayload.ID)
 		if err != nil {
+			trx.Rollback()
 			return nil, err
 		}
 
 		// qtyAvailabe := product.QtyTotal - product.QtyReserved
 		if product.QtyTotal < productPayload.Qty {
+			trx.Rollback()
 			return nil, errors.New("qty is bigger than available stock")
+		}
+
+		newProduct, err := h.productRepository.UpdateOne(trx, product, &models.Product{
+			QtyTotal: product.QtyTotal - productPayload.Qty,
+		})
+		if err != nil {
+			trx.Rollback()
+			return nil, err
 		}
 
 		priceAmount += product.Price * productPayload.Qty
@@ -50,24 +61,21 @@ func (h handler) Create(c echo.Context, o *models.CreateOrderPayload) (*models.O
 			ID:        opid,
 			ProductID: product.ID,
 			Qty:       productPayload.Qty,
-		})
-
-		h.productRepository.UpdateOne(db, product, &models.Product{
-			QtyTotal: product.QtyTotal - productPayload.Qty,
-			// QtyReserved: product.QtyReserved + productPayload.Qty,
+			Product:   *newProduct,
 		})
 	}
 
 	id, _ := uuid.NewV4()
-	order, err := h.repository.Create(db, &models.Order{
+	order, err := h.repository.Create(trx, &models.Order{
 		ID:          id,
 		PriceAmount: priceAmount,
-		Status:      "RESERVED",
 		Products:    ordersProducts,
 	})
 	if err != nil {
+		trx.Rollback()
 		return nil, err
 	}
 
+	trx.Commit()
 	return order, nil
 }

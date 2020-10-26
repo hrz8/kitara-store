@@ -8,4 +8,5 @@ type OrdersProducts struct {
 	OrderID   uuid.UUID `gorm:"column:order_id;not null;index" json:"orderId"`
 	ProductID uuid.UUID `gorm:"not null;index" json:"productId"`
 	Qty       uint64    `gorm:"column:qty;min:1" json:"qty"`
+	Product   Product   `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE" json:"product"`
 }

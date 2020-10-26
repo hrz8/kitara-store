@@ -40,5 +40,5 @@ func (h handler) UpdateOne(db *gorm.DB, p *models.Product, np *models.Product) (
 	if err := db.Model(&p).Updates(np).Error; err != nil {
 		return nil, err
 	}
-	return np, nil
+	return p, nil
 }
