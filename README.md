@@ -1,5 +1,7 @@
 # Kitara Store/Handle Concurrent Request (Try Go 1.15)
 
+Public API: https://peaceful-reef-65837.herokuapp.com
+
 ## Quick Start
 
 ### Requirements
@@ -46,7 +48,9 @@ $ go test
 
 ### Available Endpoints
 
-- Apps run in: `HOST:APP_PORT`
+Apps run in: `HOST:APP_PORT` (for local)
+
+For public : `https://peaceful-reef-65837.herokuapp.com`
 
 - if you want to run the endpoint manually to create an order, here is the available routes and endpoint:
 
