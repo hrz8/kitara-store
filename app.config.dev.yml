@@ -1,0 +1,6 @@
+APP_PORT: 8090
+DB_HOST: localhost
+DB_PORT: 3306
+DB_USER: root
+DB_PASSWORD: toor
+DB_NAME: kitara_store
