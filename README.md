@@ -51,7 +51,7 @@ $ go test
 - if you want to run the endpoint manually to create an order, here is the available routes and endpoint:
 
 
-    1. `POST /api/v1/orders`: Create new ordery
+    1. `POST /api/v1/orders`: Create new order
 
         available productIds:
 
@@ -59,7 +59,7 @@ $ go test
         - `6da51a6f-10c0-404c-82f1-2dce60d720a4`, qty `11`, price `6000`
         - `0bde6df2-f505-401f-882c-808855c2871d`, qty `8` price `17000`
         
-        
+        ---
 
         ``` json
         # Body
