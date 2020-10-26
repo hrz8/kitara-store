@@ -1,4 +1,4 @@
-# Rahman Tennis (Try Go 1.15)
+# Kitara Store/Handle Concurrent Request (Try Go 1.15)
 
 ## Quick Start
 
