@@ -37,8 +37,17 @@ func (h handler) GetByID(db *gorm.DB, id uuid.UUID) (*models.Product, error) {
 }
 
 func (h handler) UpdateOne(db *gorm.DB, p *models.Product, np *models.Product) (*models.Product, error) {
+	// db.Model(&p).Where("active = ?", true).Update("name", "hello")
 	if err := db.Model(&p).Updates(np).Error; err != nil {
 		return nil, err
 	}
 	return p, nil
+}
+
+func (h handler) UpdateStock(db *gorm.DB, id uuid.UUID, qty uint64) (*models.Product, error) {
+	var p models.Product
+	if err := db.Model(&p).Where("id = ?", id.String()).Update("qty_total", gorm.Expr("qty_total - ?", qty)).Scan(&p).Error; err != nil {
+		return nil, err
+	}
+	return &p, nil
 }

@@ -15,6 +15,7 @@ type (
 		Create(db *gorm.DB, p *models.Product) (*models.Product, error)
 		GetByID(db *gorm.DB, id uuid.UUID) (*models.Product, error)
 		UpdateOne(db *gorm.DB, p *models.Product, np *models.Product) (*models.Product, error)
+		UpdateStock(db *gorm.DB, id uuid.UUID, qty uint64) (*models.Product, error)
 	}
 
 	// Usecase is an interface of Product domain for player sharable method

@@ -2,7 +2,6 @@ package service
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strings"
@@ -74,6 +73,7 @@ func TestOrderMultiple(t *testing.T) {
 	s1 := gjson.Get(string(rd1), "status")
 	s2 := gjson.Get(string(rd2), "status")
 
-	fmt.Println(s1.Int())
-	fmt.Println(s2.Int())
+	// if payload1 is OK payload 2 must be fail
+	// if payload1 is fail payload 2 must be OK
+	assert.NotEqual(t, s1.Int(), s2.Int())
 }

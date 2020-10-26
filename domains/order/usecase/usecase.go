@@ -2,6 +2,7 @@ package repository
 
 import (
 	"errors"
+	"strings"
 
 	"github.com/gofrs/uuid"
 	"github.com/labstack/echo/v4"
@@ -35,31 +36,25 @@ func (h handler) Create(c echo.Context, o *models.CreateOrderPayload) (*models.O
 	ordersProducts := make([]models.OrdersProducts, 0)
 	var priceAmount uint64 = 0
 	for _, productPayload := range o.Products {
-		product, err := h.productRepository.GetByID(trx, productPayload.ID)
+		newProduct, err := h.productRepository.UpdateStock(trx, productPayload.ID, productPayload.Qty)
 		if err != nil {
 			trx.Rollback()
+			if strings.Contains(err.Error(), "value is out of range") {
+				return nil, errors.New("qty is bigger than available stock")
+			}
 			return nil, err
 		}
 
-		// qtyAvailabe := product.QtyTotal - product.QtyReserved
-		if product.QtyTotal < productPayload.Qty {
+		if newProduct.QtyTotal < 0 {
 			trx.Rollback()
 			return nil, errors.New("qty is bigger than available stock")
 		}
 
-		newProduct, err := h.productRepository.UpdateOne(trx, product, &models.Product{
-			QtyTotal: product.QtyTotal - productPayload.Qty,
-		})
-		if err != nil {
-			trx.Rollback()
-			return nil, err
-		}
-
-		priceAmount += product.Price * productPayload.Qty
+		priceAmount += newProduct.Price * productPayload.Qty
 		opid, _ := uuid.NewV4()
 		ordersProducts = append(ordersProducts, models.OrdersProducts{
 			ID:        opid,
-			ProductID: product.ID,
+			ProductID: newProduct.ID,
 			Qty:       productPayload.Qty,
 			Product:   *newProduct,
 		})

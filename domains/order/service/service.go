@@ -43,8 +43,16 @@ func (h handler) Create(c echo.Context) error {
 
 	order, err := h.usecase.Create(c, payload)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, echo.Map{
-			"status": http.StatusInternalServerError,
+		var status int
+		switch err.Error() {
+		case "qty is bigger than available stock":
+			status = http.StatusBadRequest
+		default:
+			status = http.StatusInternalServerError
+		}
+
+		return c.JSON(status, echo.Map{
+			"status": status,
 			"error":  err.Error(),
 		})
 	}
