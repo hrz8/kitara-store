@@ -36,7 +36,7 @@ $ go run main.go
 
 ### Test Multiple Request at the same time
 
-- NOTE: this test will PASS if you run `go run main.go migrate` and at the first attempt because the assert checking is based on fresh seed data.
+- NOTE: this test will PASS if you run `go run main.go migrate` and only PASS at the first attempt because the assert checking is based on fresh seed data.
 
 ``` bash
 # test file in the `domains/order/service` path
